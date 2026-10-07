@@ -1,0 +1,34 @@
+# Strata as a GPUStack custom inference backend.
+#
+# Import it: GPUStack -> Inference Backends -> Add Backend -> (Custom) -> import
+# this YAML. Then deploy a model and pick the "strata" backend. The image is
+# built by this repo's GitHub Actions and pushed to GHCR; see the workflow file.
+#
+# How the container is launched: GPUStack runs this image with the
+# "entrypoint" as the container command and the rendered "run_command" as its
+# arguments. run_command is "model path, then port"; the entrypoint
+# (deploy-entrypoint.sh) turns those into a Strata setup + serve start. If the
+# model files GPUStack downloaded are not there yet, the entrypoint waits up to
+# 10 minutes for them, and if they never appear Strata downloads the model
+# itself (the same way the project's own Docker image works).
+backend_name: strata
+default_version: "0.1.40"
+description: >-
+  Strata runs Qwen3.8-Flash-Next (a 125-billion-parameter mixture-of-experts
+  model) on one consumer NVIDIA card plus system RAM. OpenAI- and
+  Anthropic-compatible API, web chat and monitor.
+health_check_path: /health
+default_entrypoint: /opt/strata/deploy-entrypoint.sh
+default_env:
+  FAMILY: qwen
+  MODEL: IQ2_XS
+  CONTEXT: "32768"
+  VISION: "no"
+  HOST: 0.0.0.0
+  LOW_RAM: auto
+version_configs:
+  "0.1.40":
+    image_name: ghcr.io/zhangyi1976/niko1221-strata:v0.1.40
+    run_command: "{{model_path}} {{port}}"
+    entrypoint: /opt/strata/deploy-entrypoint.sh
+    custom_framework: cuda

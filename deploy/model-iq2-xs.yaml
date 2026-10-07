@@ -1,0 +1,27 @@
+# A starting point for deploying Strata's Qwen3.8-Flash-Next (IQ2_XS) on GPUStack.
+#
+# The reliable way to deploy is the Deployments page: add a model, choose the
+# "strata" backend, and paste the two hf.co/... file lines below. This YAML lists
+# the same fields so you can copy them (or import them, depending on your
+# GPUStack version). The two file lines are the important part - Strata's model is
+# two GGUF shards and both must be present.
+name: Qwen3.8-Flash-Next-IQ2_XS
+description: >-
+  Qwen3.8-Flash-Next (125B MoE), IQ2_XS quant, served by Strata on one NVIDIA
+  card plus system RAM. OpenAI- and Anthropic-compatible API with a web chat and
+  monitor.
+categories:
+  - llm
+replicas: 1
+backend: strata
+backend_version: "0.1.40"
+files:
+  - hf.co/ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-GGUF/IQ2_XS/Qwen3.8-Flash-Next-GSQ-RCO-IQ2_XS-00001-of-00002.gguf
+  - hf.co/ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-GGUF/IQ2_XS/Qwen3.8-Flash-Next-GSQ-RCO-IQ2_XS-00002-of-00002.gguf
+env:
+  FAMILY: qwen
+  MODEL: IQ2_XS
+  CONTEXT: "32768"
+  VISION: "no"
+  HOST: 0.0.0.0
+  LOW_RAM: auto
